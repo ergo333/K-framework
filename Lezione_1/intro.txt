@@ -1,0 +1,14 @@
+Linguaggio delle espressioni
+
+e Exp::= n | e + e | e * e | e - e
+
+kompile exp.k 
+krun example.exp dove example è il nostro "programma"
+
+nella cartella k/builtins ci sono delle grammatiche gia' definite
+
+In un linguaggio senza side-effects è indifferente usare seqstrict e strict
+strict(n): valuta categoria sintattica in posizione n fintantochè non raggiunge un terminale. Poi cerca una regola sintattica da valutare
+strict(1): 1 valutato fino alla fine -> quando diventa Int cerco una regola
+
+e ::= ... | if (e) e1 else e2 | Bool
