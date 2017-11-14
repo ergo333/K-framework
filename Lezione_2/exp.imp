@@ -1,0 +1,17 @@
+int x = 3;
+int y = 7;
+x = 9;
+y = 10;
+
+int z = 1;
+z = x + y;
+
+if ( z > 5 ) {
+	x = 100;
+} 
+else {
+	x = -100;
+}
+
+x = x + read();
+print(x);
