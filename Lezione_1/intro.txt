@@ -12,3 +12,11 @@ strict(n): valuta categoria sintattica in posizione n fintantochè non raggiunge
 strict(1): 1 valutato fino alla fine -> quando diventa Int cerco una regola
 
 e ::= ... | if (e) e1 else e2 | Bool
+
+
+$PGM variabile globale di K che indica il programma che deve essere eseguito
+
+~ -> Alt + 5
+
+krun --debugger ex.imp
+> p fa uno step
