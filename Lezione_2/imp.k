@@ -20,7 +20,7 @@ module IMP-SYNTAX
 	syntax Block ::= "{" "}"
 				  |  "{" Stmt "}"
 
-	syntax Stmt ::= "int" Id "=" AExp ";" [strict(2)]
+	syntax Stmt ::= "int" Id "=" AExp ";" [strict(2)]   //Sposta in cima alla configurazione il secondo parametro -> provare con il debug
 				| 	Id "=" AExp ";"   	  [strict(2)]	//Assegnamento	
 				|	"print" "(" AExp ")" ";" [strict]
 				|	Block
@@ -38,7 +38,7 @@ module IMP
 		<state> .Map </state>		//Inizializzato con la mappa vuota
 			//I / O 
 		<in stream="stdin"> .List </in>  //inizializzato a lista vuota
-		<out stream="stdout"> .List </out>
+		<out stream="stdout"> List </out>
 	</T>
 
 	syntax KResult ::= Int | Bool
