@@ -26,6 +26,7 @@ module IMP-SYNTAX
 				|	Block
 				|  	"if" "(" BExp ")" Block "else" Block [strict(1)]
 				|   "while" "(" BExp ")" Block  
+				|	"for" "(" Stmt BExp ";" Stmt ")" Block  //for (s e; e) -> se mettiamo come e finale solamente x++ (ad esempio)
 				| 	Stmt Stmt							//Concatenazione
 endmodule
 
@@ -35,10 +36,12 @@ module IMP
 	configuration 
 	<T>
 		<k> $PGM:Stmt </k>
-		<state> .Map </state>		//Inizializzato con la mappa vuota
+		<env> .Map </env>		//Var -> Loc
+		<store> .Map </store> 	//Loc -> Int
 			//I / O 
 		<in stream="stdin"> .List </in>  //inizializzato a lista vuota
-		<out stream="stdout"> List </out>
+		<out stream="stdout"> .List </out>
+		<nextLoc> 0 </nextLoc>  //La prima locazione utile è 0, poi ad ogni successiva incrementa
 	</T>
 
 	syntax KResult ::= Int | Bool
@@ -66,7 +69,7 @@ module IMP
 	//La mappa è la memoria in cui inseriamo il valore dell'espressione
 	rule <k> ( int X:Id = I:Int ; => .K ) ... </k> //.K sostituisce con il comando vuoto -> computazione vuota
 											  // ... lasciano inalterato quello che c'è dopo
-		<state> M:Map => M[X <- I] </state> 
+		<nextLoc> L:Int </nextLoc>
 		when notBool(X in keys(M))
 		//Modifico la mappa M con la stessa mappa ma aggiung X sovrascritto da I
 		//Questo lo faccio solo quando X non è già stata dichiarata! Non posso fare due ' int x = '
@@ -119,5 +122,8 @@ module IMP
 	//while
 	//Se la guardia è vera eseguo il blocco e rifaccio il while, altrimenti non faccio nulla
 	rule while (B:Bexp) Bl:Block => if (B) { Bl while (B) } else { }
+
+	rule for (Init:Stmt B:Bexp ; Step:Stmt) Bl:Block 
+		=> Init while (B) { Bl Step }	[structural]
 endmodule
 
