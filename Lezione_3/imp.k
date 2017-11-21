@@ -28,7 +28,7 @@ module IMP-SYNTAX
 
 	syntax Stmt ::= //int" Id "=" AExp ";" [strict(2)]   //Sposta in cima alla configurazione il secondo parametro -> provare con il debug
 				//| 	Id "=" AExp ";"   	  [strict(2)]	//Assegnamento	
-
+				|   "int" Ids ";" 	//Dichiarazione
 				| 	"int" Ids "=" AExp ";" [strict(2)]
 				|	"print" "(" AExp ")" ";" [strict]
 				|	Block
@@ -170,6 +170,8 @@ module IMP
 	rule <k> ++ X:Id => I +Int 1 ... </k>
 		 <env> ... X |-> L ... </env>
 		 <store> ... L |-> ( I:Int => I +Int 1 ) ... </store>
+
+	rule int Xs:Ids ; => int Xs = 0 ; [structural] //sto solo riscrivendo termini
 
 endmodule
 
