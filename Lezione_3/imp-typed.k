@@ -33,7 +33,7 @@ module IMP-TYPED-SYNTAX
 				|   "while" "(" BExp ")" Block  		 [seqstrict]
 				| 	Stmt Stmt							//Concatenazione
 
-				|	"for" "(" Stmt BExp ";" AExp ")" Block [seqstrict] //for (s e; e) -> se mettiamo come e finale solamente x++ (ad esempio)
+				|	"for" "(" Stmt BExp ";" Stmt ")" Block  //for (s e; e) -> se mettiamo come e finale solamente x++ (ad esempio)
 endmodule
 
 module IMP-TYPED
@@ -56,10 +56,12 @@ module IMP-TYPED
 	configuration 
 	<T>
 		<k> $PGM:Stmt </k>
-		<state> .Map </state>		//Inizializzato con la mappa vuota
+		<env> .Map </env>		//Var -> Loc
+		<store> .Map </store> 	//Loc -> Int
 			//I / O 
 		<in stream="stdin"> .List </in>  //inizializzato a lista vuota
 		<out stream="stdout"> .List </out>
+		<nextLoc> 0 </nextLoc>  //La prima locazione utile è 0, poi ad ogni successiva incrementa
 	</T>
 
 	//Dobbiamo aggiungere due regole, perchè interi e booleani non sono finali
@@ -110,19 +112,7 @@ module IMP-TYPED
 	rule S1:Stmt S2:Stmt => S1 ~> S2 [structural]
 
 	//aggiungiamo la regola per lo statement
-	rule unit ~> S:Stmt => S
-
-	//Dobbiamo prima valutare S1 e S2 -> non c'è un calcolo da fare
-	//C'è solo una riscrittura -> REGOLA STRUTTURALE
-	/*
-		S1 : x = 1;
-		S2 : y = 3; z = 5;
-
-		In cima alla computazione x = 1 ~> S2 
-		Poi S2 diventa: y = 3 ~> z = 5
-
-		Non cambia lo stato. Non c'è una computazione, è solo una riscrittura
-	*/		
+	rule unit ~> S:Stmt => S	
 
 	rule <k> ( X:Id => int) ... </k>
 		 <state> ... X |-> int ... </state>
@@ -152,15 +142,15 @@ module IMP-TYPED
 	//Se la guardia è vera eseguo il blocco e rifaccio il while, altrimenti non faccio nulla
 	rule while (bool) unit => unit
 
-	//Aggiungo la regola del for
-	rule for (unit bool ; int) => unit
-
-
 	//Aggiungo la regola dell'operatore ++ -> crea side effect: x++ + ++x -> dipende da come abbiamo implementato la somma
 	rule <k> X:Id ++ => int ... </k>
 		<state> ... X |-> int  ... </state>
 
 	rule <k> ++ X:Id => int ... </k>
 		<state>  ... X |-> int ... </state>
+
+	//Aggiungo la regola del for
+	rule for (Init:Stmt B:Bexp ; Step:Stmt) Bl:Block 
+		=> Init while (B) { Bl Step }	[structural]
 
 endmodule

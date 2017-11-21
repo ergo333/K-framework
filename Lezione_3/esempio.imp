@@ -3,7 +3,13 @@ int x = 5;
 
 y = x++ + ++x;
 if (x < 100){
-	
+	y = 1;
 }else{
-	
+	y = 3;
+}
+
+int x = 0;
+int y = 0;
+for (x=0; x<5; x=x+1;){
+	y = y + 1;
 }
